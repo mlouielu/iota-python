@@ -31,12 +31,12 @@ $ yaourt -S rocksdb
 
 ### Installation of IOTA-Python
 
-#### $ pipenv install iota-python
+#### $ pipenv install iotapy
 
 To install IOTA-Python, simply run this simple command in your terminal of choice:
 
 ```
-$ pipenv install iota-python
+$ pipenv install iotapy
 ```
 
 #### Get the Source Code
