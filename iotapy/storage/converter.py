@@ -29,6 +29,7 @@ def increment(trits, length):
         else:
             break
 
+
 def init_converter():
     global BYTE_TO_TRITS_MAPPINGS, TRYTE_TO_TRITS_MAPPINGS
 
@@ -40,6 +41,7 @@ def init_converter():
     for i in range(27):
         TRYTE_TO_TRITS_MAPPINGS[i] = trits[:NUMBER_OF_TRITS_IN_A_TRYTE]
         increment(trits, NUMBER_OF_TRITS_IN_A_TRYTE)
+
 
 def from_trits_to_binary(trits, offset=0, size=HASH_LENGTH):
     b = bytearray(b' ' * int((size + NUMBER_OF_TRITS_IN_A_BYTE - 1) / NUMBER_OF_TRITS_IN_A_BYTE))
@@ -63,5 +65,6 @@ def from_binary_to_trits(bs, length):
         offset += NUMBER_OF_TRITS_IN_A_BYTE
 
     return trits
+
 
 init_converter()
