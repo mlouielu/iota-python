@@ -169,7 +169,6 @@ class RocksDBProvider:
         # Convert into data object
         return self._get_key(key, column), self._get(bytes_, column)
 
-
     def may_exist(self, key, column, fetch=False):
         key, ch = self._convert_key_column(key, column)
 
