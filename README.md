@@ -107,13 +107,25 @@ Fragment(b'RBTC9D9DCDFAEACCWCXCGDEAXCGDEAPCEAHDTCGDHDEAUCFDCDADEAZBMDHDWCCDBD999
 'Hello! This is a test from Python'
 >>> tx.as_json_compatible()
 {
-    ...
+    'hash_': ...,
+    'signature_message_fragment': ...,
+    'address': Address(b'9TPHVCFLAZTZSDUWFBLCJOZICJKKPVDMAASWJZNFFBKRDDTEOUJHR9JVGTJNI9IYNVISZVXARWJFKUZWC'),
+    'value': 0,
+    'legacy_tag': ...,
+    'timestamp': 1508993435,
+    'current_index': 0,
+    'last_index': 0,
+    'bundle_hash': ...,
+    'trunk_transaction_hash': ...,
+    'branch_transaction_hash': ...,
+    'tag': Tag(b'EXAMPLEPYTHONLIB99999999999'),
+    'attachment_timestamp': 1508993445508,
+    'attachment_timestamp_lower_bound': 0,
+    'attachment_timestamp_upper_bound': 12,
+    'nonce': Nonce(b'HYNAKUFLKW9UZXXIDJFGUMUDDVX')
 }
 >>>
 ```
-
-The full list of column family can be found at `RocksDBProvider.column_family_names`,
-but this list is used for low level database access, it only used at `RocksDBProvider.db`.
 
 If you are using method such as `RocksDBProvider.get`, `RocksDBProvider.latest`,
 please use the following column family name:
@@ -127,6 +139,22 @@ state_diff
 tag
 transaction
 transaction_metadata
+```
+
+
+The full list of column family name can be found at `RocksDBProvider.column_family_names`,
+but this list is used for low level database access, it only used at `RocksDBProvider.db`.
+
+```
+b'default'
+b'transaction'
+b'transaction-metadata'
+b'milestone'
+b'stateDiff'
+b'address'
+b'approvee'
+b'bundle'
+b'tag'
 ```
 
 Example of `RocksDBProvider` methods:
