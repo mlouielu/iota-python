@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import types
 import unittest
 import iota
 import iotapy
+from collections import Counter
 from iota import TransactionHash
 from iotapy.storage.providers import rocksdb
 
@@ -25,7 +27,8 @@ class RocksDBProviderTest(unittest.TestCase):
             TransactionHash(b'UNUK99RCIWLUQ9WMUT9MPQSZCHTUMGN9IWOCOXWMNPICCCQKLLNIIE9UIFGKZLHRI9QAOEQXQJLL99999')
         ]
 
-        self.assertListEqual(value, expect)
+        for v in value:
+            self.assertIn(v, expect)
 
         # Bad
         with self.assertRaises(TypeError):
@@ -59,15 +62,13 @@ class RocksDBProviderTest(unittest.TestCase):
                   'attachment_timestamp_upper_bound': 12,
                   'validity': 1,
                   'type': -1,
-                  'arrival_time': 1508993991,
                   'height': 0,
-                  'solid': True,
-                  'snapshot': 251623,
-                  'sender': 'local'}
+                  'solid': True}
 
         self.assertIsInstance(value, dict)
         self.assertEqual(value['solid'], True)
-        self.assertEqual(value, expect)
+        for k in expect:
+            self.assertEqual(value[k], expect[k], '"%s" different' % k)
 
     def test_get_milestone(self):
         key = 259773
@@ -93,7 +94,7 @@ class RocksDBProviderTest(unittest.TestCase):
             TransactionHash(b'ELIWEYAYXYEFOWBHJMELTKVERQWTJF9RXRLISNNQQVWGS9EMYYBVWRJYVJUYAPBGDQNYQEZOPBXWA9999'),
         ]
 
-        self.assertListEqual(value, expect)
+        self.assertEqual(Counter(value), Counter(expect))
 
         # Bad
         self.assertIsNone(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'approvee'))
@@ -112,7 +113,7 @@ class RocksDBProviderTest(unittest.TestCase):
             TransactionHash(b'INLMRLGUURIAVIKCBUCBNEALFLVHFRGWPKUBBEFKOMFRROCSDGXSTWXRBHOXERJKDCURA9LJUHIN99999')
         ]
 
-        self.assertListEqual(value, expect)
+        self.assertEqual(Counter(value), Counter(expect))
 
         # Bad
         self.assertIsNone(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'bundle'))
@@ -126,7 +127,7 @@ class RocksDBProviderTest(unittest.TestCase):
         key = iota.Address(b'9TPHVCFLAZTZSDUWFBLCJOZICJKKPVDMAASWJZNFFBKRDDTEOUJHR9JVGTJNI9IYNVISZVXARWJFKUZWC')
         value = list(self.provider.get(key, 'address'))
 
-        self.assertGreaterEqual(len(value), 86)
+        self.assertGreaterEqual(len(value), 84)
         self.assertIsInstance(value[0], iota.TransactionHash)
 
         # Bad
@@ -138,16 +139,10 @@ class RocksDBProviderTest(unittest.TestCase):
             self.provider.get('', 'address')
 
     def test_get_state_diff(self):
-        key = iota.TransactionHash(b'ZRWRRONUH9RRGUWSCF9GFZVOLDQRHEYLLTK9AKRALNZPMHY9ZEXELICWGFFJTRMDUEYEVDSLCWKSZ9999')
-        value = list(self.provider.get(key, 'state_diff'))
-        expect = [
-            (TransactionHash(b'ETOTZUWBFOIXGWLVAWLQDRX9PV9ADSURFKAPMGSKUXVOBFDEAGTYPNAKQMMIRYJAQIGJNHTJJAXORXIBC'), 15000000),
-            (TransactionHash(b'ITO9RDEJSMVTALFNCKDHNMOLXK9VMNXHKYQHJFZSZVBICBETUTKYKFG9WTXCUIYUCGCMWNA99NYHABE9B'), 1410751498386),
-            (TransactionHash(b'ZVEYLIAXGAJAZP9NDHNWSIIJBZNETCSPJRSBGXVXSIAFUAZHKUDGIACFQJFRGZKUPZCYSMDJGWOCHWYAC'), 10000000),
-            (TransactionHash(b'JCOVBKZLFCTBDFDLNRIIZTMBBCQVSCGZYGJXJIZGJTUVBPYYILERZMBWDHDGBTGLUZJB9BEXSZOQIZHMD'), -1410776498386)
-        ]
+        key, value = self.provider.latest('state_diff')
 
-        self.assertListEqual(value, expect)
+        self.assertIsInstance(key, iota.TransactionHash)
+        self.assertIsInstance(value, types.GeneratorType)
 
         # Bad
         self.assertIsNone(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'state_diff'))
