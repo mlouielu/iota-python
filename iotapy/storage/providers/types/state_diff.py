@@ -18,6 +18,8 @@ def get_key(bytes_: bytes):
 
 
 def get(bytes_: bytes):
+    if bytes_ is None:
+        return iter(())
     if not isinstance(bytes_, bytes):
         raise TypeError
 

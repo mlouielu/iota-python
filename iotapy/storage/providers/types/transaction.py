@@ -17,6 +17,8 @@ def get_key(bytes_: bytes):
 
 
 def get(bytes_: bytes):
+    if bytes_ is None:
+        return None
     if not isinstance(bytes_, bytes):
         raise TypeError
 

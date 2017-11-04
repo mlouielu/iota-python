@@ -121,9 +121,6 @@ class RocksDBProvider:
 
         # Get binary data from database
         bytes_ = self.db.get(key, ch)
-        if not bytes_:
-            return None
-
         return self._get(bytes_, column)
 
     def next(self, key, column):
@@ -135,8 +132,6 @@ class RocksDBProvider:
 
         # XXX: We will get segfault if this is NULL in database
         key, bytes_ = it.get()
-        if not bytes_:
-            return None
 
         # Convert into data object
         return self._get_key(key, column), self._get(bytes_, column)
@@ -149,8 +144,6 @@ class RocksDBProvider:
 
         # XXX: We will get segfault if this is NULL in database
         key, bytes_ = it.get()
-        if not bytes_:
-            return None
 
         # Convert into data object
         return self._get_key(key, column), self._get(bytes_, column)
@@ -163,8 +156,6 @@ class RocksDBProvider:
 
         # XXX: We will get segfault if this is NULL in database
         key, bytes_ = it.get()
-        if not bytes_:
-            return None
 
         # Convert into data object
         return self._get_key(key, column), self._get(bytes_, column)

@@ -97,8 +97,8 @@ class RocksDBProviderTest(unittest.TestCase):
         self.assertEqual(Counter(value), Counter(expect))
 
         # Bad
-        self.assertIsNone(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'approvee'))
-        self.assertIsNone(self.provider.get(iota.TransactionHash('FOOBAR'), 'approvee'))
+        self.assertFalse(list(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'approvee')))
+        self.assertFalse(list(self.provider.get(iota.TransactionHash('FOOBAR'), 'approvee')))
         with self.assertRaises(ValueError):
             self.assertIsNone(self.provider.get(iota.TryteString('FOOBAR'), 'approvee'))
         with self.assertRaises(TypeError):
@@ -116,8 +116,8 @@ class RocksDBProviderTest(unittest.TestCase):
         self.assertEqual(Counter(value), Counter(expect))
 
         # Bad
-        self.assertIsNone(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'bundle'))
-        self.assertIsNone(self.provider.get(iota.BundleHash('FOOBAR'), 'bundle'))
+        self.assertFalse(list(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'bundle')))
+        self.assertFalse(list(self.provider.get(iota.BundleHash('FOOBAR'), 'bundle')))
         with self.assertRaises(ValueError):
             self.assertIsNone(self.provider.get(iota.TryteString('FOOBAR'), 'bundle'))
         with self.assertRaises(TypeError):
@@ -131,8 +131,8 @@ class RocksDBProviderTest(unittest.TestCase):
         self.assertIsInstance(value[0], iota.TransactionHash)
 
         # Bad
-        self.assertIsNone(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'address'))
-        self.assertIsNone(self.provider.get(iota.Address('FOOBAR'), 'address'))
+        self.assertFalse(list(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'address')))
+        self.assertFalse(list(self.provider.get(iota.Address('FOOBAR'), 'address')))
         with self.assertRaises(ValueError):
             self.assertIsNone(self.provider.get(iota.TryteString('FOOBAR'), 'address'))
         with self.assertRaises(TypeError):
@@ -145,8 +145,8 @@ class RocksDBProviderTest(unittest.TestCase):
         self.assertIsInstance(value, types.GeneratorType)
 
         # Bad
-        self.assertIsNone(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'state_diff'))
-        self.assertIsNone(self.provider.get(iota.TransactionHash('FOOBAR'), 'state_diff'))
+        self.assertFalse(list(self.provider.get(iota.TryteString('9' * (iota.Hash.LEN - 1) + 'A'), 'state_diff')))
+        self.assertFalse(list(self.provider.get(iota.TransactionHash('FOOBAR'), 'state_diff')))
         with self.assertRaises(ValueError):
             self.assertIsNone(self.provider.get(iota.TryteString('FOOBAR'), 'state_diff'))
         with self.assertRaises(TypeError):
