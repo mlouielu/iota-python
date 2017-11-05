@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import shutil
+import tempfile
 import types
 import unittest
 import iota
@@ -9,7 +11,7 @@ from iota import TransactionHash
 from iotapy.storage.providers import rocksdb
 
 
-class RocksDBProviderTest(unittest.TestCase):
+class RocksDBProviderExistDBReadOnlyFunctionTest(unittest.TestCase):
     def setUp(self):
         self.provider = rocksdb.RocksDBProvider('/var/db/iota/mainnetdb', '/var/db/iota/mainnetdb.log', read_only=True)
         self.provider.init()
@@ -209,6 +211,30 @@ class RocksDBProviderTest(unittest.TestCase):
         key = iota.TransactionHash('PZYRMRVTSPQXNEQIQEBAGINMDAKOHPOLNH9LR9DTFWMWFQICXL9BJCWBUPMKZERKYKBDRIBYEJYH99999')
         self.assertTrue(self.provider.may_exist(key, 'transaction'))
         self.assertFalse(self.provider.may_exist(iota.Hash('FOOBAR'), 'transaction'))
+
+
+class RocksDBProvderTest(unittest.TestCase):
+    def setUp(self):
+        self.db_path = tempfile.mkdtemp()
+        self.db_log_path = tempfile.mkdtemp()
+
+        self.provider = rocksdb.RocksDBProvider(self.db_path, self.db_log_path, read_only=False)
+        self.provider.init()
+
+    def cleanUp(self):
+        del self.provider.db
+        del self.provider
+        shutil.rmtree(self.db_path)
+        shutil.rmtree(self.db_log_path)
+
+    def test_create_a_new_database(self):
+        with tempfile.TemporaryDirectory() as db_path:
+            with tempfile.TemporaryDirectory() as db_log_path:
+                r = rocksdb.RocksDBProvider(str(db_path), str(db_log_path), read_only=False)
+                r.init()
+                ch = r.db.column_family_handles[b'transaction']
+                r.db.put(b'hello', b'world', ch)
+                self.assertEqual(r.db.get(b'hello', ch), b'world')
 
 
 if __name__ == '__main__':

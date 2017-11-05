@@ -71,8 +71,25 @@ class RocksDBProvider:
             max_write_buffer_number=2,
             write_buffer_size=2 * MB)
 
-        self.db = rocksdb_iota.DB(self.db_path, options, self.column_family_names,
-                                  read_only=self.read_only)
+        try:
+            self.db = rocksdb_iota.DB(
+                self.db_path, options, self.column_family_names,
+                read_only=self.read_only)
+        except rocksdb_iota.errors.InvalidArgument as e:
+            if 'Column family not found' in str(e):
+                # Currently, rocksdb_iota didn't support
+                # "create_if_column_family_missing" option, if we detect this
+                # is a new database, we will need to create its whole
+                # column family manually.
+                self.db = rocksdb_iota.DB(
+                    self.db_path, options, [b'default'], read_only=self.read_only)
+
+                # Skip to create b'default'
+                for column_family in self.column_family_names[1:]:
+                    self.db.create_column_family(column_family)
+            else:
+                raise e
+
 
     def _convert_column_to_handler(self, column):
         if not isinstance(column, str):
