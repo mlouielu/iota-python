@@ -1,6 +1,7 @@
 
 import struct
 import iota
+from typing import List, Tuple
 from iotapy.storage import converter
 
 
@@ -23,8 +24,16 @@ def get(bytes_: bytes):
     if not isinstance(bytes_, bytes):
         raise TypeError
 
-    for i in range(0, len(bytes_), STATE_DIFF_BYTES_LENGTH):
+    for i in range(0, len(bytes_), STATE_DIFF_BYTES_LENGTH + 1):
         value = struct.unpack('>q', bytes_[i + STATE_DIFF_BYTES_LENGTH - 8:i + STATE_DIFF_BYTES_LENGTH])[0]
         ti = converter.from_binary_to_trits(bytes_[i:i + STATE_DIFF_BYTES_LENGTH - 8], STATE_DIFF_TRITS_LENGTH)
 
         yield (iota.TransactionHash.from_trits(ti), value)
+
+
+def save(value: List[Tuple[iota.TransactionHash, int]]):
+    if not value:
+        return b''
+
+    return b','.join(
+        [converter.from_trits_to_binary(i[0].as_trits()) + struct.pack('>q', i[1]) for i in value])

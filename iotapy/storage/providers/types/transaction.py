@@ -24,3 +24,10 @@ def get(bytes_: bytes):
 
     ti = converter.from_binary_to_trits(bytes_, TRANSACTION_TRITS_LENGTH)
     return iota.Transaction.from_tryte_string(iota.TryteString.from_trits(ti), bytes_)
+
+
+def save(value: iota.Transaction):
+    if not value:
+        return b''
+
+    return converter.from_trits_to_binary(value.as_tryte_string().as_trits())

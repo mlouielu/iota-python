@@ -17,3 +17,6 @@ class Tangle:
 
     def latest(self, column):
         return self.provider.latest(column)
+
+    def save(self, key, value, column):
+        return self.provider.save(key, value, column)

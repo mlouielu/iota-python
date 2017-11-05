@@ -133,6 +133,10 @@ class RocksDBProvider:
     def _get_key(self, bytes_, column):
         return getattr(iotapy.storage.providers.types, column).get_key(bytes_)
 
+    def _save(self, value, column):
+        # Convert value to bytes
+        return getattr(iotapy.storage.providers.types, column).save(value)
+
     def get(self, key, column):
         key, ch = self._convert_key_column(key, column)
 
@@ -182,3 +186,9 @@ class RocksDBProvider:
 
         # XXX: Not working......
         return self.db.key_may_exist(key, ch)[0]
+
+    def save(self, key, value, column):
+        key, ch = self._convert_key_column(key, column)
+        value = self._save(value, column)
+
+        self.db.put(key, value, ch)

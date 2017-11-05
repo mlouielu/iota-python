@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import iota
+from typing import List
 from iotapy.storage import converter
 
 
@@ -27,3 +28,10 @@ def get(bytes_: bytes):
     for i in range(0, len(bytes_), TRANSACTION_BYTES_LENGTH + 1):
         ti = converter.from_binary_to_trits(bytes_[i:i + TRANSACTION_BYTES_LENGTH], TRANSACTION_TRITS_LENGTH)
         yield iota.types.TransactionHash.from_trits(ti)
+
+
+def save(value: List[iota.TransactionHash]):
+    if not value:
+        return b''
+
+    return b','.join(map(converter.from_trits_to_binary, [i.as_trits() for i in value]))

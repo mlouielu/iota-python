@@ -2,6 +2,7 @@
 
 import struct
 import iota
+from typing import Tuple
 from iotapy.storage import converter
 
 
@@ -28,3 +29,10 @@ def get(bytes_: bytes):
         converter.from_binary_to_trits(bytes_[4:], HASH_TRITS_LENGTH))
 
     return (index, milestone)
+
+
+def save(value: Tuple[int, iota.TransactionHash]):
+    if not value:
+        return b''
+
+    return struct.pack('>l', value[0]) + converter.from_trits_to_binary(value[1].as_trits())

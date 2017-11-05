@@ -213,7 +213,7 @@ class RocksDBProviderExistDBReadOnlyFunctionTest(unittest.TestCase):
         self.assertFalse(self.provider.may_exist(iota.Hash('FOOBAR'), 'transaction'))
 
 
-class RocksDBProvderTest(unittest.TestCase):
+class RocksDBProviderTest(unittest.TestCase):
     def setUp(self):
         self.db_path = tempfile.mkdtemp()
         self.db_log_path = tempfile.mkdtemp()
@@ -235,6 +235,94 @@ class RocksDBProvderTest(unittest.TestCase):
                 ch = r.db.column_family_handles[b'transaction']
                 r.db.put(b'hello', b'world', ch)
                 self.assertEqual(r.db.get(b'hello', ch), b'world')
+
+    def test_save_tag(self):
+        key = iota.Tag('EXAMPLE')
+        value = [iota.TransactionHash('FOO'), iota.TransactionHash('BAR')]
+        self.provider.save(key, value, 'tag')
+
+        v = self.provider.get(key, 'tag')
+        self.assertEqual(list(v), value)
+
+        value = [iota.TransactionHash('THISWILLOVERRIDETHEVALUE')]
+        self.provider.save(key, value, 'tag')
+
+        v = self.provider.get(key, 'tag')
+        self.assertEqual(list(v), value)
+
+    def test_save_bundle(self):
+        key = iota.TransactionHash('EXAMPLE')
+        value = [iota.TransactionHash('FOO'), iota.TransactionHash('BAR')]
+        self.provider.save(key, value, 'bundle')
+
+        v = self.provider.get(key, 'bundle')
+        self.assertEqual(list(v), value)
+
+        value = [iota.TransactionHash('THISWILLOVERRIDETHEVALUE')]
+        self.provider.save(key, value, 'bundle')
+
+        v = self.provider.get(key, 'bundle')
+        self.assertEqual(list(v), value)
+
+    def test_save_approvee(self):
+        key = iota.TransactionHash('EXAMPLE')
+        value = [iota.TransactionHash('FOO'), iota.TransactionHash('BAR')]
+        self.provider.save(key, value, 'approvee')
+
+        v = self.provider.get(key, 'approvee')
+        self.assertEqual(list(v), value)
+
+        value = [iota.TransactionHash('THISWILLOVERRIDETHEVALUE')]
+        self.provider.save(key, value, 'approvee')
+
+        v = self.provider.get(key, 'approvee')
+        self.assertEqual(list(v), value)
+
+    def test_save_address(self):
+        key = iota.Address('EXAMPLE')
+        value = [iota.TransactionHash('FOO'), iota.TransactionHash('BAR')]
+        self.provider.save(key, value, 'address')
+
+        v = self.provider.get(key, 'address')
+        self.assertEqual(list(v), value)
+
+        value = [iota.TransactionHash('THISWILLOVERRIDETHEVALUE')]
+        self.provider.save(key, value, 'address')
+
+        v = self.provider.get(key, 'address')
+        self.assertEqual(list(v), value)
+
+    def test_save_state_diff(self):
+        key = iota.TransactionHash('EXAMPLE')
+        value = [(iota.TransactionHash('FOO'), 1000000), (iota.TransactionHash('BAR'), -10000000)]
+        self.provider.save(key, value, 'state_diff')
+
+        v = self.provider.get(key, 'state_diff')
+        self.assertEqual(list(v), value)
+
+        value = [(iota.TransactionHash('THISWILLOVERRIDETHEVALUE'), 10000)]
+        self.provider.save(key, value, 'state_diff')
+
+        v = self.provider.get(key, 'state_diff')
+        self.assertEqual(list(v), value)
+
+    def test_save_milestone(self):
+        key = 26000
+        value = (key, iota.TransactionHash('FOO'))
+        self.provider.save(key, value, 'milestone')
+
+        v = self.provider.get(key, 'milestone')
+        self.assertEqual(v, value)
+
+        value = (key, iota.TransactionHash('BAR'))
+        self.provider.save(key, value, 'milestone')
+
+        v = self.provider.get(key, 'milestone')
+        self.assertEqual(v, value)
+
+    def test_save_transaction_metadata(self):
+        # XXX: Why?
+        pass
 
 
 if __name__ == '__main__':
