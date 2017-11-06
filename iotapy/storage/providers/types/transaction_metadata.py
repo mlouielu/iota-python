@@ -68,7 +68,7 @@ def get(bytes_: bytes, key=None):
     i += 1
     snapshot = struct.unpack('>l', bytes_[i:i + 4])[0]
     i += 4
-    sender = bytes_[i:].decode('ascii')
+    sender = bytes_[i:]
 
     return {
         'address': address,

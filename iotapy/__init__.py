@@ -4,6 +4,7 @@ import iota
 import iotapy.network
 import iotapy.snapshot
 import iotapy.storage
+import iotapy.validators
 
 __version__ = '0.1.2'
 

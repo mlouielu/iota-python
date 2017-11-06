@@ -5,6 +5,9 @@ import iotapy
 from typing import List
 
 
+EMPTY_HASH = iota.Hash('9' * 81)
+
+
 class TransactionRequester:
     def __init__(self, tangle):
         self.tangle = tangle

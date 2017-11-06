@@ -132,7 +132,7 @@ class RocksDBProvider:
         obj = getattr(iotapy.storage.providers.types, column).get(bytes_, key)
 
         # Handle metadata
-        if key and column == 'transaction':
+        if obj and key and column == 'transaction':
             obj.set_metadata(self.get(key, 'transaction_metadata'))
 
         return obj

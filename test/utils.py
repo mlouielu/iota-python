@@ -26,5 +26,6 @@ def get_random_transaction_with_trunk_and_branch(trunk, branch):
     tx = get_random_transaction()
     tx.trunk_transaction_hash = trunk
     tx.branch_transaction_hash = branch
+    tx.type = -1
 
     return tx
