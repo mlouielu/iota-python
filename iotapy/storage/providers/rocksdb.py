@@ -10,6 +10,7 @@ from iotapy.storage import converter
 
 KB = 1024
 MB = KB * 1024
+MERGED = ['tag', 'bundle', 'approvee', 'address', 'state_diff']
 
 
 class RocksDBProvider:
@@ -191,4 +192,24 @@ class RocksDBProvider:
         key, ch = self._convert_key_column(key, column)
         value = self._save(value, column)
 
-        self.db.put(key, value, ch)
+        if column in MERGED:
+            self.db.merge(key, value, ch)
+        else:
+            self.db.put(key, value, ch)
+
+    def store(self, key, value, column):
+        # Store is different then save, currently deailing with transaction
+        # that transaction will save more data to other column
+        batches = getattr(iotapy.storage.providers.types, column).store(key, value)
+
+        write_batch = rocksdb_iota.WriteBatch()
+        for key, value, column in batches:
+            key, ch = self._convert_key_column(key, column)
+            value = self._save(value, column)
+
+            if column in MERGED:
+                write_batch.merge(key, value, ch)
+            else:
+                write_batch.put(key, value, ch)
+
+        self.db.write(write_batch)
