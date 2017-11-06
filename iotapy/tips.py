@@ -16,6 +16,9 @@ class TipsManager:
         self.transaction_validator = transaction_validator
         self.max_depth = max_depth
 
+    def cap_sum(self, a, b):
+        return MAX_VALUE if a + b < 0 or a + b > MAX_VALUE else a + b
+
     def transaction_to_approve(self,
                                reference: iota.TransactionHash,
                                extra_tip: iota.TransactionHash,
@@ -36,7 +39,7 @@ class TipsManager:
            pass
 
         return tip
-    
+
     def markov_chain_monte_carlo(self, tip: iota.TransactionHash,
                                  extra_tip: iota.TransactionHash,
                                  ratings: dict,
@@ -72,7 +75,7 @@ class TipsManager:
             tx = self.tangle.get(tip, 'transaction')
             approvers = self.tangle.get(tip, 'approvee')
             approvers = list(approvers) if approvers else []
-    
+
             if tx.current_index == 0:
                 # bla bla bla check
                 tail = tip
@@ -105,7 +108,7 @@ class TipsManager:
                     break
 
         return tail
-        
+
     def serial_update_ratings(self,
                               txh: iota.TransactionHash,
                               ratings: dict,
@@ -131,6 +134,35 @@ class TipsManager:
                 analyzed_tips.add(current_hash)
                 rating = 1 if extra_tip and self.ledger_validator.is_approved(current_hash) else 0
                 rating += functools.reduce(
-                    lambda a, b: MAX_VALUE if a + b < 0 or a + b > MAX_VALUE else a + b,
+                    self.cap_sum,
                     filter(lambda x: x, map(ratings.get, approvers)), 0)
                 ratings[current_hash] = rating
+
+    def update_hash_ratings(self, txh: iota.TransactionHash, ratings: dict, analyzed_tips: set):
+        if txh not in analyzed_tips:
+            analyzed_tips.add(txh)
+            approvers = self.tangle.get(txh, 'approvee')
+            rating = set([txh])
+
+            for approver in set(approvers):
+                rating.update(self.update_hash_ratings(approver, ratings, analyzed_tips))
+
+            ratings[txh] = rating
+        else:
+            rating = ratings.get(txh, set())
+
+        return rating
+
+    def recursive_update_ratings(self, txh: iota.TransactionHash, ratings: dict, analyzed_tips: set):
+        rating = 1
+        if txh not in analyzed_tips:
+            analyzed_tips.add(txh)
+            approvers = self.tangle.get(txh, 'approvee')
+            for approver in set(approvers):
+                rating = self.cap_sum(rating,
+                                self.recursive_update_ratings(approver, ratings, analyzed_tips))
+            ratings[txh] = rating
+        else:
+            rating = ratings.get(txh, 0)
+
+        return rating
