@@ -127,7 +127,7 @@ class RocksDBProvider:
 
         return key, ch
 
-    def _get(self, bytes_, column, key=None):
+    def _get(self, key, bytes_, column):
         # Convert value (bytes_) into data object
         obj = getattr(iotapy.storage.providers.types, column).get(bytes_, key)
 
@@ -145,11 +145,11 @@ class RocksDBProvider:
         return getattr(iotapy.storage.providers.types, column).save(value)
 
     def get(self, key, column):
-        key, ch = self._convert_key_column(key, column)
+        k, ch = self._convert_key_column(key, column)
 
         # Get binary data from database
-        bytes_ = self.db.get(key, ch)
-        return self._get(bytes_, column)
+        bytes_ = self.db.get(k, ch)
+        return self._get(key, bytes_, column)
 
     def next(self, key, column):
         key, ch = self._convert_key_column(key, column)
@@ -160,9 +160,10 @@ class RocksDBProvider:
 
         # XXX: We will get segfault if this is NULL in database
         key, bytes_ = it.get()
+        key = self._get_key(key, column)
 
         # Convert into data object
-        return self._get_key(key, column), self._get(bytes_, column)
+        return key, self._get(key, bytes_, column)
 
     def first(self, column):
         ch = self._convert_column_to_handler(column)
@@ -172,9 +173,10 @@ class RocksDBProvider:
 
         # XXX: We will get segfault if this is NULL in database
         key, bytes_ = it.get()
+        key = self._get_key(key, column)
 
         # Convert into data object
-        return self._get_key(key, column), self._get(bytes_, column)
+        return key, self._get(key, bytes_, column)
 
     def latest(self, column):
         ch = self._convert_column_to_handler(column)
@@ -184,9 +186,10 @@ class RocksDBProvider:
 
         # XXX: We will get segfault if this is NULL in database
         key, bytes_ = it.get()
+        key = self._get_key(key, column)
 
         # Convert into data object
-        return self._get_key(key, column), self._get(bytes_, column)
+        return key, self._get(key, bytes_, column)
 
     def may_exist(self, key, column, fetch=False):
         key, ch = self._convert_key_column(key, column)

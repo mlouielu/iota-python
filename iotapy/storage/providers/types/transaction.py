@@ -30,7 +30,7 @@ def save(value: iota.Transaction):
     if not value:
         return b''
 
-    return converter.from_trits_to_binary(value.as_tryte_string().as_trits())
+    return converter.from_trits_to_binary(value.as_tryte_string().as_trits(), 0, 8019)
 
 
 def store(txh: iota.TransactionHash, tx: iota.Transaction):
@@ -41,8 +41,8 @@ def store(txh: iota.TransactionHash, tx: iota.Transaction):
         (tx.branch_transaction_hash, [txh], 'approvee'),
         (tx.trunk_transaction_hash, [txh], 'approvee'),
         (tx.legacy_tag, [txh], 'tag'),
-        (txh, tx, 'transaction'),
-        (txh, tx, 'transaction_metadata')
+        (txh, tx, 'transaction_metadata'),
+        (txh, tx, 'transaction')
     ]
 
 

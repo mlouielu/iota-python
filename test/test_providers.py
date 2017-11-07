@@ -9,6 +9,7 @@ import iotapy
 from collections import Counter
 from iota import TransactionHash
 from iotapy.storage.providers import rocksdb
+from test import utils
 
 
 class RocksDBProviderExistDBReadOnlyFunctionTest(unittest.TestCase):
@@ -321,8 +322,23 @@ class RocksDBProviderTest(unittest.TestCase):
         self.assertEqual(v, value)
 
     def test_save_transaction_metadata(self):
-        # XXX: Why?
-        pass
+        tx = utils.get_random_transaction()
+        tx.solid = True
+        tx.value = 0
+        self.provider.save(tx.hash, tx, 'transaction_metadata')
+
+        v = self.provider.get(tx.hash, 'transaction_metadata')
+        self.assertEqual(v['solid'], True)
+
+    def test_store_transaction_should_save_metadata(self):
+        tx = utils.get_random_transaction()
+        tx.solid = True
+        tx.value = -100
+        self.provider.store(tx.hash, tx, 'transaction')
+
+        v = self.provider.get(tx.hash, 'transaction')
+        self.assertEqual(v.solid, True)
+        self.assertEqual(v.value, -100)
 
 
 if __name__ == '__main__':
