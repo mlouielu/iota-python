@@ -6,7 +6,17 @@ The target of this project is to create a pure Python implementation of IOTA nod
 
 ## Current Develop Status
 
-* rocksdb readable
+* rocksdb: read, write, store (batch)
+* tangle: get, first, latest, next, save, store
+* ISS, snapshot: validate, diff, patch
+* tx_requester: function, but not thread
+* tx_validator: validate, check_solidity
+
+Roadmap:
+
+* Documentation of IRI behavior and description
+* Send TX (tips selection, attach to tangle, broadcast and store)
+* Network node (TCP and UDP)
 
 
 ## Getting Started
