@@ -20,3 +20,6 @@ class Tangle:
 
     def save(self, key, value, column):
         return self.provider.save(key, value, column)
+
+    def store(self, key, value, column):
+        self.provider.store(key, value, column)
