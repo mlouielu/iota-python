@@ -15,7 +15,7 @@ def get_key(bytes_: bytes):
     if not isinstance(bytes_, bytes):
         raise TypeError
 
-    key = iota.TransactionHash.from_trits(converter.from_binary_to_trits(bytes_, HASH_TRITS_LENGTH))
+    key = iota.TransactionHash.from_trits(conv.from_binary_to_trits(bytes_, HASH_TRITS_LENGTH))
     return key
 
 
