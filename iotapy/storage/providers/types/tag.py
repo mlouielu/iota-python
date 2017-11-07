@@ -19,7 +19,7 @@ def get_key(bytes_: bytes):
     return key
 
 
-def get(bytes_: bytes):
+def get(bytes_: bytes, key=None):
     if bytes_ is None:
         return iter(())
     if not isinstance(bytes_, bytes):

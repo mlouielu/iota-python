@@ -19,7 +19,7 @@ def get_key(bytes_: bytes):
     return key
 
 
-def get(bytes_: bytes):
+def get(bytes_: bytes, key=None):
     if bytes_ is None:
         return None
     if not isinstance(bytes_, bytes):
@@ -92,3 +92,32 @@ def get(bytes_: bytes):
         'snapshot': snapshot,
         'sender': sender
     }
+
+
+def save(value: iota.Transaction):
+    buf = b''
+
+    buf += conv.from_trits_to_binary(value.address.as_trits())
+    buf += conv.from_trits_to_binary(value.bundle_hash.as_trits())
+    buf += conv.from_trits_to_binary(value.trunk_transaction_hash.as_trits())
+    buf += conv.from_trits_to_binary(value.branch_transaction_hash.as_trits())
+    buf += conv.from_trits_to_binary(value.legacy_tag.as_trits())
+    buf += struct.pack('>q', value.value)
+    buf += struct.pack('>q', value.current_index)
+    buf += struct.pack('>q', value.last_index)
+    buf += struct.pack('>q', value.timestamp)
+
+    buf += conv.from_trits_to_binary(value.tag.as_trits())
+    buf += struct.pack('>q', value.attachment_timestamp)
+    buf += struct.pack('>q', value.attachment_timestamp_lower_bound)
+    buf += struct.pack('>q', value.attachment_timestamp_upper_bound)
+
+    buf += struct.pack('>l', value.validity)
+    buf += struct.pack('>l', value.type)
+    buf += struct.pack('>q', value.arrival_time)
+    buf += struct.pack('>q', value.height)
+    buf += struct.pack('>?', value.solid)
+    buf += struct.pack('>l', value.snapshot)
+    buf += value.sender
+
+    return buf

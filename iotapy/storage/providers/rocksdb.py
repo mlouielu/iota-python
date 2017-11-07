@@ -127,9 +127,15 @@ class RocksDBProvider:
 
         return key, ch
 
-    def _get(self, bytes_, column):
+    def _get(self, bytes_, column, key=None):
         # Convert value (bytes_) into data object
-        return getattr(iotapy.storage.providers.types, column).get(bytes_)
+        obj = getattr(iotapy.storage.providers.types, column).get(bytes_, key)
+
+        # Handle metadata
+        if key and column == 'transaction':
+            obj.set_metadata(self.get(key, 'transaction_metadata'))
+
+        return obj
 
     def _get_key(self, bytes_, column):
         return getattr(iotapy.storage.providers.types, column).get_key(bytes_)
@@ -200,13 +206,13 @@ class RocksDBProvider:
         batches = getattr(iotapy.storage.providers.types, column).store(key, value)
 
         write_batch = rocksdb_iota.WriteBatch()
-        for key, value, column in batches:
-            key, ch = self._convert_key_column(key, column)
-            value = self._save(value, column)
+        for k, v, column in batches:
+            k, ch = self._convert_key_column(k, column)
+            v = self._save(v, column)
 
             if column in MERGED:
-                write_batch.merge(key, value, ch)
+                write_batch.merge(k, v, ch)
             else:
-                write_batch.put(key, value, ch)
+                write_batch.put(k, v, ch)
 
         self.db.write(write_batch)
