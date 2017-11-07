@@ -5,8 +5,8 @@ from iotapy.storage.providers import rocksdb
 
 
 class Tangle:
-    def __init__(self):
-        self.provider = rocksdb.RocksDBProvider()
+    def __init__(self, provider):
+        self.provider = provider
         self.provider.init()
 
     def get(self, key, column):
