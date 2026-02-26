@@ -1,2 +1,0 @@
-python-rocksdb-iota>=0.7.2
-pyota>=2.0.1
